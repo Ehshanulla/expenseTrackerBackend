@@ -1,0 +1,93 @@
+version: '3.9'
+
+services:
+  # =========================
+  # Zookeeper
+  # =========================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    container_name: expensetracker-zookeeper-1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-log:/var/lib/zookeeper/log
+    restart: always
+
+  # =========================
+  # Kafka
+  # =========================
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    container_name: expensetracker-kafka-1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+    # IMPORTANT — FIXED LISTENERS
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    restart: always
+
+  # =========================
+  # MySQL
+  # =========================
+  mysql:
+    image: mysql:8.3.0
+    container_name: mysql-8.3.0
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-db:/var/lib/mysql
+
+  # =========================
+  # User Service
+  # =========================
+  # user-service:
+  #   build: ./userService
+  #   image: user-service
+  #   container_name: user-service
+  #   ports:
+  #     - "8282:8282"
+  #   depends_on:
+  #     - kafka
+  #     - mysql
+  #   restart: always
+
+  # # =========================
+  # # Auth Service
+  # # =========================
+  # auth-service:
+  #   build: ./expenseTrackingApp
+  #   image: auth-service
+  #   container_name: auth-service
+  #   ports:
+  #     - "8181:8181"
+  #   depends_on:
+  #     - kafka
+  #     - mysql
+  #   restart: always
+
+# =========================
+# Named Volumes
+# =========================
+volumes:
+  mysql-db:
+  zookeeper-data:
+  zookeeper-log:

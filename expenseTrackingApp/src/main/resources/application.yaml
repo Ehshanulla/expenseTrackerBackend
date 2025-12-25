@@ -1,0 +1,38 @@
+server:
+  port: 8181
+
+spring:
+  application:
+    name: expenseTrackingApp
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/auth_service
+    username: root
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.serializer.UserInfoSerializer
+
+    topic-json:
+      name: user_service
+
+app:
+  jwt:
+    secret: f3VhN2h4S2lIY2p1dm9ua1R1MmxqU1JqR0h0U3ZMbENZcG9lZ0R4Qg==
+    expiration: 180000
+
+cloud:
+  discovery:
+    enabled: false
+
+eureka:
+  client:
+    enabled: false

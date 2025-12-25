@@ -1,0 +1,29 @@
+server:
+  port: 8383
+
+spring:
+  application:
+    name: expenseService
+
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/expense_db
+    username: root
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.consumer.ExpenseDeserializer
+      group-id: expense-info-consumer-group
+      properties:
+        spring.json.value.default.type: com.Dto.ExpenseDto
+
+    topic-json:
+      name: expense_service

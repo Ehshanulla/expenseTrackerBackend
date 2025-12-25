@@ -1,0 +1,35 @@
+server:
+  port: 8282
+
+spring:
+  application:
+    name: userService
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/users_service
+    username: root
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: com.deserializer.UserInfoDeserializer
+      group-id: user-service-group
+      properties:
+        spring.json.value.default.type: com.models.UserInfoDTO
+
+    topic-json:
+      name: user_service
+
+  cloud:
+    discovery:
+      enabled: false
+eureka:
+  client:
+    enabled: false
